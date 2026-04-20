@@ -4,6 +4,7 @@ import com.westside.controledecarros.dto.request.VeiculoRequest;
 import com.westside.controledecarros.dto.response.VeiculoResponse;
 import com.westside.controledecarros.enums.StatusVeiculo;
 import com.westside.controledecarros.service.VeiculoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,8 @@ public class VeiculoController {
     private final VeiculoService veiculoService;
 
     @PostMapping("/proprietario/{proprietarioId}")
-    public ResponseEntity<VeiculoResponse> cadastrar(
-            @PathVariable Long proprietarioId,
-            @RequestBody VeiculoRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(veiculoService.cadastrar(proprietarioId, request));
+    public ResponseEntity<VeiculoResponse> cadastrar( @PathVariable Long proprietarioId, @RequestBody @Valid VeiculoRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(veiculoService.cadastrar(proprietarioId, request));
     }
 
     @GetMapping
