@@ -1,8 +1,11 @@
 package com.westside.controledecarros.service;
 
+import com.westside.controledecarros.dto.request.VeiculoRequest;
+import com.westside.controledecarros.dto.response.VeiculoResponse;
 import com.westside.controledecarros.entity.Proprietario;
 import com.westside.controledecarros.entity.Veiculo;
 import com.westside.controledecarros.enums.StatusVeiculo;
+import com.westside.controledecarros.mapper.VeiculoMapper;
 import com.westside.controledecarros.repository.VeiculoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,37 +21,47 @@ public class VeiculoService {
     private final VeiculoRepository veiculoRepository;
     private final ProprietarioService proprietarioService;
 
-    public Veiculo cadastrar(Long proprietarioId, Veiculo veiculo) {
-        veiculoRepository.findByPlaca(veiculo.getPlaca()).ifPresent(v -> {
+    public VeiculoResponse cadastrar(Long proprietarioId, VeiculoRequest request) {
+        veiculoRepository.findByPlaca(request.getPlaca()).ifPresent(v -> {
             throw new IllegalArgumentException("Já existe um veículo cadastrado com esta placa.");
         });
 
-        Proprietario proprietario = proprietarioService.buscarPorId(proprietarioId);
+        Proprietario proprietario = proprietarioService.buscarEntidadePorId(proprietarioId);
+        Veiculo veiculo = VeiculoMapper.toEntity(request);
         veiculo.setProprietario(proprietario);
 
-        return veiculoRepository.save(veiculo);
+        return VeiculoMapper.toResponse(veiculoRepository.save(veiculo));
     }
 
-    public List<Veiculo> listarTodos() {
-        return veiculoRepository.findAll();
+    public List<VeiculoResponse> listarTodos() {
+        return veiculoRepository.findAll()
+                .stream()
+                .map(VeiculoMapper::toResponse)
+                .toList();
     }
 
-    public List<Veiculo> listarPorProprietario(Long proprietarioId) {
-        return veiculoRepository.findByProprietarioId(proprietarioId);
+    public VeiculoResponse buscarPorId(Long id) {
+        return VeiculoMapper.toResponse(buscarEntidadePorId(id));
     }
 
-    public List<Veiculo> listarPorStatus(StatusVeiculo status) {
-        return veiculoRepository.findByStatus(status);
-    }
-
-    public Veiculo buscarPorId(Long id) {
-        return veiculoRepository.findById(id)
+    public VeiculoResponse buscarPorPlaca(String placa) {
+        Veiculo veiculo = veiculoRepository.findByPlaca(placa)
                 .orElseThrow(() -> new EntityNotFoundException("Veículo não encontrado."));
+        return VeiculoMapper.toResponse(veiculo);
     }
 
-    public Veiculo buscarPorPlaca(String placa) {
-        return veiculoRepository.findByPlaca(placa)
-                .orElseThrow(() -> new EntityNotFoundException("Veículo não encontrado."));
+    public List<VeiculoResponse> listarPorProprietario(Long proprietarioId) {
+        return veiculoRepository.findByProprietarioId(proprietarioId)
+                .stream()
+                .map(VeiculoMapper::toResponse)
+                .toList();
+    }
+
+    public List<VeiculoResponse> listarPorStatus(StatusVeiculo status) {
+        return veiculoRepository.findByStatus(status)
+                .stream()
+                .map(VeiculoMapper::toResponse)
+                .toList();
     }
 
     public void expirarVeiculosVencidos() {
@@ -57,5 +70,11 @@ public class VeiculoService {
 
         vencidos.forEach(v -> v.setStatus(StatusVeiculo.EXPIRADO));
         veiculoRepository.saveAll(vencidos);
+    }
+
+    // Método interno — retorna a entidade para uso dentro da própria service
+    private Veiculo buscarEntidadePorId(Long id) {
+        return veiculoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Veículo não encontrado."));
     }
 }
