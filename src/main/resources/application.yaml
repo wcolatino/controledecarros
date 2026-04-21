@@ -1,12 +1,6 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/controle-de-carros
-    username: postgres
-    password: admin
-  jpa:
-    hibernate:
-      ddl-auto: update    #Evita erros de inicialização - mudar para validate/update
-    show-sql: false
+  profiles:
+    active: dev
 
 jwt:
   secret: WestsideCondominio2024@SecretKey#32
