@@ -31,7 +31,8 @@ public class GlobalExceptionHandler {
     // Captura qualquer exceção não tratada explicitamente — evita expor stack trace ao cliente
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor.");
+        ex.printStackTrace(); // temporário para debug
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     // Disparada quando algum campo do request falha nas validações do @Valid
