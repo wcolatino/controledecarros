@@ -19,7 +19,7 @@ public class VeiculoRequest {
 
     // Aceita placas no formato antigo (ABC-1234) e Mercosul (ABC1D23)
     @NotBlank(message = "A placa é obrigatória.")
-    @Pattern(regexp = "^[A-Z]{3}-?\\d{4}$|^[A-Z]{3}\\d[A-Z]\\d{2}$", message = "Placa inválida. Use o formato ABC-1234 ou ABC1D23.")
+    @Pattern(regexp = "^[A-Za-z]{3}-?\\d{4}$|^[A-Za-z]{3}\\d[A-Za-z]\\d{2}$", message = "Placa inválida. Use o formato ABC-1234 ou ABC1D23.")
     private String placa;
 
     @NotNull(message = "A vaga é obrigatória.")

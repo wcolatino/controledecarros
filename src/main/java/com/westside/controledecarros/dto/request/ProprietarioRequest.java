@@ -22,6 +22,5 @@ public class ProprietarioRequest {
 
     // Aceita formatos: (11) 91234-5678 ou (11) 1234-5678
     @NotBlank(message = "O telefone é obrigatório.")
-    @Pattern(regexp = "^\\(\\d{2}\\) \\d{4,5}-\\d{4}$", message = "Telefone inválido. Use o formato (11) 91234-5678.")
     private String telefone;
 }

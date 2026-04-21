@@ -12,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 // Responsável pela autenticação e registro de usuários
 @Service
 @RequiredArgsConstructor
@@ -49,5 +51,12 @@ public class AuthService {
         usuarioRepository.save(usuario);
 
         return new RegisterResponse(usuario.getId(), usuario.getLogin(), usuario.getRole());
+    }
+
+    public List<RegisterResponse> listarUsuarios() {
+        return usuarioRepository.findAll()
+                .stream()
+                .map(u -> new RegisterResponse(u.getId(), u.getLogin(), u.getRole()))
+                .toList();
     }
 }
